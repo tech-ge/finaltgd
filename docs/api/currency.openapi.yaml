@@ -1,0 +1,95 @@
+openapi: 3.0.3
+info:
+  title: TechGeo Currency Service API
+  version: 1.0.0
+  description: TGD ledger, minting, escrow, and settlement. Withdrawal is not exposed.
+
+servers:
+  - url: https://techgeo-currency.onrender.com
+
+paths:
+  /health:
+    get:
+      summary: Liveness probe
+      responses:
+        "200":
+          description: OK
+
+  /deposit:
+    post:
+      summary: Mint TGD from a confirmed fiat deposit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [accountId, fiatAmount, fiatCurrency, gatewayReference, gatewayName]
+              properties:
+                accountId: { type: integer }
+                fiatAmount: { type: string }
+                fiatCurrency: { type: string }
+                gatewayReference: { type: string }
+                gatewayName: { type: string, enum: [mpesa, bank] }
+      responses:
+        "201":
+          description: Deposit recorded
+
+  /send/internal:
+    post:
+      summary: User-to-user transfer
+      responses:
+        "200":
+          description: Transfer recorded
+
+  /send/b2b:
+    post:
+      summary: Business-to-business transfer
+      responses:
+        "200":
+          description: Transfer recorded
+
+  /send/b2c:
+    post:
+      summary: Business-to-user transfer
+      responses:
+        "200":
+          description: Transfer recorded
+
+  /escrow:
+    post:
+      summary: Lock funds in escrow
+      responses:
+        "201":
+          description: Escrow created
+
+  /escrow/release:
+    post:
+      summary: Release escrow on GPS and biometric match
+      responses:
+        "200":
+          description: Escrow released
+
+  /balance/{accountId}:
+    get:
+      summary: Read derived balance for an account
+      parameters:
+        - in: path
+        name: accountId
+        required: true
+        schema: { type: integer }
+      responses:
+        "200":
+          description: Balance returned
+
+  /rate/{code}:
+    get:
+      summary: Read the active rate for a fiat currency
+      parameters:
+        - in: path
+        name: code
+        required: true
+        schema: { type: string }
+      responses:
+        "200":
+          description: Rate returned

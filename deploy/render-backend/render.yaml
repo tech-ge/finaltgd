@@ -1,0 +1,142 @@
+services:
+  - type: web
+    name: techgeo-gateway
+    runtime: docker
+    dockerfilePath: ./deploy/render-backend/Dockerfile.gateway
+    dockerContext: .
+    plan: starter
+    region: frankfurt
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - fromGroup: techgeo-common
+      - key: SERVICE_NAME
+        value: gateway
+      - key: PORT
+        value: "3000"
+
+  - type: web
+    name: techgeo-currency
+    runtime: docker
+    dockerfilePath: ./deploy/render-backend/Dockerfile.currency
+    dockerContext: .
+    plan: starter
+    region: frankfurt
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - fromGroup: techgeo-common
+      - key: SERVICE_NAME
+        value: currency
+
+  - type: web
+    name: techgeo-identity
+    runtime: docker
+    dockerfilePath: ./deploy/render-backend/Dockerfile.identity
+    dockerContext: .
+    plan: starter
+    region: frankfurt
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - fromGroup: techgeo-common
+      - key: SERVICE_NAME
+        value: identity
+
+  - type: web
+    name: techgeo-maps
+    runtime: docker
+    dockerfilePath: ./deploy/render-backend/Dockerfile.maps
+    dockerContext: .
+    plan: starter
+    region: frankfurt
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - fromGroup: techgeo-common
+      - key: SERVICE_NAME
+        value: maps
+
+  - type: web
+    name: techgeo-attendance
+    runtime: docker
+    dockerfilePath: ./deploy/render-backend/Dockerfile.attendance
+    dockerContext: .
+    plan: starter
+    region: frankfurt
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - fromGroup: techgeo-common
+      - key: SERVICE_NAME
+        value: attendance
+
+  - type: web
+    name: techgeo-health
+    runtime: docker
+    dockerfilePath: ./deploy/render-backend/Dockerfile.health
+    dockerContext: .
+    plan: starter
+    region: frankfurt
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - fromGroup: techgeo-common
+      - key: SERVICE_NAME
+        value: health
+
+  - type: web
+    name: techgeo-business
+    runtime: docker
+    dockerfilePath: ./deploy/render-backend/Dockerfile.business
+    dockerContext: .
+    plan: starter
+    region: frankfurt
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - fromGroup: techgeo-common
+      - key: SERVICE_NAME
+        value: business
+
+  - type: web
+    name: techgeo-admin
+    runtime: docker
+    dockerfilePath: ./deploy/render-backend/Dockerfile.admin
+    dockerContext: .
+    plan: starter
+    region: frankfurt
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - fromGroup: techgeo-common
+      - key: SERVICE_NAME
+        value: admin
+
+envVarGroups:
+  - name: techgeo-common
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: info
+      - key: TZ
+        value: Africa/Nairobi
+      - key: POSTGRES_URL
+        sync: false
+      - key: MONGO_URL
+        sync: false
+      - key: REDIS_LEDGER_URL
+        sync: false
+      - key: REDIS_CACHE_URL
+        sync: false
+      - key: KAFKA_BROKERS
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: DEVICE_FINGERPRINT_SALT
+        generateValue: true
+      - key: HF_TOKEN
+        sync: false

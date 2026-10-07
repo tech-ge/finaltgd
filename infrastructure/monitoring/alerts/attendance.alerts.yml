@@ -1,0 +1,19 @@
+groups:
+  - name: techgeo.attendance
+    interval: 30s
+    rules:
+      - alert: AttendanceIpMismatchSurge
+        expr: rate(attendance_failed_ip_total[10m]) > 10
+        for: 10m
+        labels:
+          severity: medium
+        annotations:
+          summary: Elevated IP mismatch rate
+
+      - alert: MockGpsFlagsElevated
+        expr: rate(mock_gps_flagged_total[10m]) > 3
+        for: 10m
+        labels:
+          severity: high
+        annotations:
+          summary: Mock GPS flags detected

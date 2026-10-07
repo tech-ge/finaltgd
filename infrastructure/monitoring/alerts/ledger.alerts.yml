@@ -1,0 +1,27 @@
+groups:
+  - name: techgeo.ledger
+    interval: 30s
+    rules:
+      - alert: LedgerTransferErrorsHigh
+        expr: rate(ledger_transfer_errors_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: high
+        annotations:
+          summary: Ledger transfer error rate elevated
+
+      - alert: LedgerRedisEvictionPolicyChanged
+        expr: redis_config_maxmemory_policy{role="ledger"} != 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Ledger Redis is no longer using noeviction
+
+      - alert: BalanceDriftDetected
+        expr: abs(ledger_sum_debits - ledger_sum_credits) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Double-entry invariant violated

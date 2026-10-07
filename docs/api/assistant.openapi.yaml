@@ -1,0 +1,110 @@
+openapi: 3.0.3
+info:
+  title: TechGeo Assistant Service API
+  version: 1.0.0
+  description: Voice clone, call handling, emergency, family bridge.
+
+servers:
+  - url: https://techgeo-assistant.onrender.com
+
+paths:
+  /health:
+    get:
+      summary: Liveness probe
+      responses:
+        "200":
+          description: OK
+
+  /voice/enroll:
+    post:
+      summary: Enroll a voice sample
+      responses:
+        "201":
+          description: Enrolled
+
+  /voice/synthesize:
+    post:
+      summary: Synthesize speech with the enrolled voice
+      responses:
+        "200":
+          description: Synthesis result
+
+  /call/log:
+    post:
+      summary: Record a call outcome
+      responses:
+        "201":
+          description: Recorded
+
+  /call/history/{accountId}:
+    get:
+      summary: Read call history
+      parameters:
+        - in: path
+        name: accountId
+        required: true
+        schema: { type: integer }
+      responses:
+        "200":
+          description: History returned
+
+  /emergency/accident-check:
+    post:
+      summary: Evaluate a motion window for accident signatures
+      responses:
+        "200":
+          description: Verdict returned
+
+  /emergency/health-check:
+    post:
+      summary: Evaluate a vitals window for emergencies
+      responses:
+        "200":
+          description: Verdict returned
+
+  /emergency/trigger:
+    post:
+      summary: Trigger emergency dialing and family notification
+      responses:
+        "202":
+          description: Accepted
+
+  /family/circle:
+    post:
+      summary: Create a family circle
+      responses:
+        "201":
+          description: Circle created
+
+  /family/member:
+    post:
+      summary: Add a member to a family circle
+      responses:
+        "201":
+          description: Member added
+
+  /family/members/{circleId}:
+    get:
+      summary: List members of a family circle
+      parameters:
+        - in: path
+        name: circleId
+        required: true
+        schema: { type: integer }
+      responses:
+        "200":
+          description: Members returned
+
+  /family/announce:
+    post:
+      summary: Broadcast an announcement to a family circle
+      responses:
+        "202":
+          description: Broadcast accepted
+
+  /family/group-call:
+    post:
+      summary: Start a group call for a family circle
+      responses:
+        "201":
+          description: Session created

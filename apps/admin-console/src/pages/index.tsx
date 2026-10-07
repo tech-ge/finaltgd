@@ -1,0 +1,27 @@
+import Link from 'next/link';
+import React from 'react';
+
+export default function Home(): React.ReactElement {
+  return (
+    <main className="min-h-screen flex flex-col items-center justify-center p-8">
+      <h1 className="text-4xl font-bold mb-4">TechGeo Admin</h1>
+      <p className="text-gray-400 mb-8 max-w-lg text-center">
+        Hierarchy, live presence, fraud detection, and gold log export.
+      </p>
+      <div className="flex gap-4">
+        <Link
+          href="/login"
+          className="px-6 py-3 rounded-lg bg-blue-500 text-white font-semibold"
+        >
+          Sign in
+        </Link>
+        <Link
+          href="/live-monitor"
+          className="px-6 py-3 rounded-lg border border-gray-700 text-white"
+        >
+          Live monitor
+        </Link>
+      </div>
+    </main>
+  );
+}

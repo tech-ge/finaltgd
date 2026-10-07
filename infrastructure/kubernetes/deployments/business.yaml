@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: techgeo-business
+  namespace: techgeo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: techgeo-business
+  template:
+    metadata:
+      labels:
+        app: techgeo-business
+    spec:
+      containers:
+        - name: business
+          image: techgeo/business:latest
+          ports:
+            - containerPort: 3007
+          envFrom:
+            - secretRef:
+                name: techgeo-business-secrets

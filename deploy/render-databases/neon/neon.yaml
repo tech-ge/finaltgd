@@ -1,0 +1,8 @@
+project: techgeo
+region: aws-eu-central-1
+postgres_version: 16
+branch: main
+compute:
+  min_cu: 0.25
+  max_cu: 2
+  autosuspend_seconds: 300

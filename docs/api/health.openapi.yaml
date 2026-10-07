@@ -1,0 +1,58 @@
+openapi: 3.0.3
+info:
+  title: TechGeo Health Service API
+  version: 1.0.0
+  description: Sensor fusion, audio analytics, move-to-earn.
+
+servers:
+  - url: https://techgeo-health.onrender.com
+
+paths:
+  /health:
+    get:
+      summary: Liveness probe
+      responses:
+        "200":
+          description: OK
+
+  /audio/breathing:
+    post:
+      summary: Classify a breathing audio frame
+      responses:
+        "200":
+          description: Result
+
+  /audio/distress:
+    post:
+      summary: Classify voice distress
+      responses:
+        "200":
+          description: Result
+
+  /audio/fatigue:
+    post:
+      summary: Classify fatigue from voice
+      responses:
+        "200":
+          description: Result
+
+  /steps/validate:
+    post:
+      summary: Validate step counts against accelerometer samples
+      responses:
+        "200":
+          description: Validation result
+
+  /wellness/vector:
+    post:
+      summary: Build a wellness vector from activity and vitals
+      responses:
+        "200":
+          description: Vector returned
+
+  /move-to-earn/progress:
+    post:
+      summary: Evaluate move-to-earn progress and reward
+      responses:
+        "200":
+          description: Progress and reward

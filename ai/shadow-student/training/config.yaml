@@ -1,0 +1,39 @@
+model:
+  base: "meta-llama/Llama-3.1-8B-Instruct"
+  revision: "main"
+  dtype: "bfloat16"
+  device_map: "auto"
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+  bias: "none"
+
+training:
+  epochs: 2
+  batch_size: 2
+  gradient_accumulation_steps: 8
+  learning_rate: 0.0002
+  warmup_ratio: 0.03
+  lr_scheduler: "cosine"
+  weight_decay: 0.01
+  max_seq_length: 2048
+  save_steps: 200
+  eval_steps: 100
+  logging_steps: 20
+  output_dir: "./ai/shadow-student/lora-checkpoints/latest"
+  seed: 42
+
+data:
+  gold_logs_dir: "./ai/shadow-student/gold-logs/extracted"
+  validation_split: 0.1
+  min_quality_score: 0.7

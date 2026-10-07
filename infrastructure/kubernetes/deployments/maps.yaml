@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: techgeo-maps
+  namespace: techgeo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: techgeo-maps
+  template:
+    metadata:
+      labels:
+        app: techgeo-maps
+    spec:
+      containers:
+        - name: maps
+          image: techgeo/maps:latest
+          ports:
+            - containerPort: 3004
+          envFrom:
+            - secretRef:
+                name: techgeo-maps-secrets

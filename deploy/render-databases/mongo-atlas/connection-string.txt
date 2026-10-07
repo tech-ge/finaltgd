@@ -1,0 +1,5 @@
+# Template only. Do not commit credentials.
+#
+# mongodb+srv://USER:PASSWORD@CLUSTER.mongodb.net/techgeo?retryWrites=true&w=majority
+#
+# Set the value in the host's environment settings.

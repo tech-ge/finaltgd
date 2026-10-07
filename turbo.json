@@ -1,0 +1,33 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [".env", "tsconfig.base.json"],
+  "globalEnv": [
+    "NODE_ENV",
+    "LOG_LEVEL",
+    "TZ",
+    "POSTGRES_URL",
+    "MONGO_URL",
+    "REDIS_LEDGER_URL",
+    "REDIS_CACHE_URL",
+    "KAFKA_BROKERS",
+    "JWT_SECRET",
+    "JWT_EXPIRES_IN",
+    "DEVICE_FINGERPRINT_SALT",
+    "HF_TOKEN",
+    "HF_SHADOW_STUDENT_URL",
+    "HF_VOICE_CLONE_URL",
+    "HF_SPEECH_URL",
+    "SENTRY_DSN"
+  ],
+  "pipeline": {
+    "build": { "dependsOn": ["^build"], "outputs": ["dist/**", ".next/**", "build/**"] },
+    "dev": { "cache": false, "persistent": true },
+    "lint": { "dependsOn": ["^build"], "outputs": [] },
+    "typecheck": { "dependsOn": ["^build"], "outputs": [] },
+    "test": { "dependsOn": ["build"], "outputs": ["coverage/**"] },
+    "test:e2e": { "dependsOn": ["build"], "cache": false, "outputs": [] },
+    "db:migrate": { "cache": false, "outputs": [] },
+    "db:seed": { "cache": false, "outputs": [] },
+    "clean": { "cache": false, "outputs": [] }
+  }
+}

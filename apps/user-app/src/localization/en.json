@@ -1,0 +1,32 @@
+{
+  "app": {
+    "name": "TechGeo"
+  },
+  "wallet": {
+    "balance": "Balance",
+    "deposit": "Deposit",
+    "send": "Send",
+    "history": "History"
+  },
+  "map": {
+    "origin": "From",
+    "destination": "To",
+    "eta": "ETA",
+    "distance": "Distance"
+  },
+  "health": {
+    "wellness": "Wellness",
+    "steps": "Steps",
+    "sleep": "Sleep"
+  },
+  "assistant": {
+    "title": "Assistant",
+    "voice": "Voice",
+    "emergency": "Emergency"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "loading": "Loading"
+  }
+}

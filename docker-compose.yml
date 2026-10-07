@@ -1,0 +1,2 @@
+# Root pointer file. Real configuration is in deploy/local-dev/docker-compose.yml.
+# Run: docker compose -f deploy/local-dev/docker-compose.yml up -d

@@ -1,0 +1,7 @@
+name: techgeo-redis-ledger
+region: eu-west-1
+tls: true
+maxmemory: 256mb
+eviction: noeviction
+persistence: AOF
+consistent: true

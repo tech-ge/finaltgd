@@ -1,0 +1,8 @@
+{
+  "app": "assistant-app",
+  "runtimeVersion": "1.0.0",
+  "channels": {
+    "preview": "preview",
+    "production": "production"
+  }
+}

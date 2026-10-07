@@ -1,0 +1,23 @@
+{
+  "title": "TechGeo AI",
+  "uid": "techgeo-ai",
+  "schemaVersion": 39,
+  "panels": [
+    {
+      "title": "Invocations",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "rate(ai_invocations_total[1m])", "legendFormat": "invocations/s" }
+      ]
+    },
+    {
+      "title": "Restrictions",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "rate(ai_restriction_scheduled_total[1m])", "legendFormat": "restrictions/s" }
+      ]
+    }
+  ]
+}

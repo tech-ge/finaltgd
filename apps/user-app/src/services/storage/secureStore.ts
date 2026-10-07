@@ -1,0 +1,19 @@
+import * as SecureStore from 'expo-secure-store';
+
+export const SECURE_KEYS = {
+  SESSION_TOKEN: 'techgeo.session.token',
+  ACCOUNT_ID: 'techgeo.account.id',
+  DEVICE_FINGERPRINT: 'techgeo.device.fingerprint',
+} as const;
+
+export async function saveSecure(key: string, value: string): Promise<void> {
+  await SecureStore.setItemAsync(key, value);
+}
+
+export async function loadSecure(key: string): Promise<string | null> {
+  return SecureStore.getItemAsync(key);
+}
+
+export async function deleteSecure(key: string): Promise<void> {
+  await SecureStore.deleteItemAsync(key);
+}

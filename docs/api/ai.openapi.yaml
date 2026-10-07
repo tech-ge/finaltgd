@@ -1,0 +1,69 @@
+openapi: 3.0.3
+info:
+  title: TechGeo AI Orchestrator API
+  version: 1.0.0
+  description: Scoped context access, agent-to-agent requests, restrictions.
+
+servers:
+  - url: https://techgeo-ai-orchestrator.onrender.com
+
+paths:
+  /health:
+    get:
+      summary: Liveness probe
+      responses:
+        "200":
+          description: OK
+
+  /consent:
+    post:
+      summary: Record or revoke consent for a scope
+      responses:
+        "200":
+          description: Consent recorded
+
+  /context/read:
+    post:
+      summary: Read a scoped context for an account
+      responses:
+        "200":
+          description: Context returned
+        "403":
+          description: Consent missing or refused
+
+  /agent-to-agent:
+    post:
+      summary: Send an agent message
+      responses:
+        "200":
+          description: Refusal or result
+
+  /invoke:
+    post:
+      summary: Invoke an AI intent
+      responses:
+        "200":
+          description: Result
+        "403":
+          description: AI restricted
+
+  /rules/violate:
+    post:
+      summary: Record a rule violation and schedule a restriction
+      responses:
+        "201":
+          description: Restriction scheduled
+
+  /audit/count:
+    get:
+      summary: Read the current audit trail length
+      responses:
+        "200":
+          description: Count returned
+
+  /audit/verify:
+    get:
+      summary: Verify the integrity of the audit trail
+      responses:
+        "200":
+          description: Verification result

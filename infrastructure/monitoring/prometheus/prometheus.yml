@@ -1,0 +1,29 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: techgeo-gateway
+    static_configs:
+      - targets: ['techgeo-gateway:3000']
+  - job_name: techgeo-currency
+    static_configs:
+      - targets: ['techgeo-currency:3002']
+  - job_name: techgeo-identity
+    static_configs:
+      - targets: ['techgeo-identity:3003']
+  - job_name: techgeo-maps
+    static_configs:
+      - targets: ['techgeo-maps:3004']
+  - job_name: techgeo-attendance
+    static_configs:
+      - targets: ['techgeo-attendance:3005']
+  - job_name: techgeo-health
+    static_configs:
+      - targets: ['techgeo-health:3006']
+  - job_name: techgeo-business
+    static_configs:
+      - targets: ['techgeo-business:3007']
+  - job_name: techgeo-admin
+    static_configs:
+      - targets: ['techgeo-admin:3008']

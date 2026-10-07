@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: techgeo-attendance
+  namespace: techgeo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: techgeo-attendance
+  template:
+    metadata:
+      labels:
+        app: techgeo-attendance
+    spec:
+      containers:
+        - name: attendance
+          image: techgeo/attendance:latest
+          ports:
+            - containerPort: 3005
+          envFrom:
+            - secretRef:
+                name: techgeo-attendance-secrets

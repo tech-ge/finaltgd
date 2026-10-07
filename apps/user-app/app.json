@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "TechGeo",
+    "slug": "techgeo-user",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "techgeo",
+    "userInterfaceStyle": "dark",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "app.techgeo.user",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "TechGeo uses your location to verify attendance and route you between points.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "TechGeo uses background location to verify presence at your workplace.",
+        "NSFaceIDUsageDescription": "TechGeo uses Face ID to authorize payments."
+      }
+    },
+    "android": {
+      "package": "app.techgeo.user",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT"
+      ]
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-local-authentication",
+      "expo-location"
+    ]
+  }
+}

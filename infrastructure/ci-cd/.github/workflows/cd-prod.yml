@@ -1,0 +1,60 @@
+name: cd-prod
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.0
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Verify production invariants
+        run: bash scripts/verify-invariants.sh
+
+      - name: Deploy backend
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: bash scripts/deploy-render.sh
+
+      - name: Deploy always-on
+        env:
+          ZEABUR_TOKEN: ${{ secrets.ZEABUR_TOKEN }}
+        run: bash scripts/deploy-zeabur.sh
+
+      - name: Deploy frontends
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: bash scripts/deploy-vercel.sh
+
+      - name: Deploy AI spaces
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: bash scripts/deploy-huggingface.sh
+
+      - name: Deploy edge
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: bash scripts/deploy-cloudflare.sh

@@ -1,0 +1,98 @@
+openapi: 3.0.3
+info:
+  title: TechGeo Business Service API
+  version: 1.0.0
+  description: Storefronts, payments, heatmaps, inventory, settlement.
+
+servers:
+  - url: https://techgeo-business.onrender.com
+
+paths:
+  /health:
+    get:
+      summary: Liveness probe
+      responses:
+        "200":
+          description: OK
+
+  /storefront:
+    post:
+      summary: Create a storefront
+      responses:
+        "201":
+          description: Created
+
+  /storefront/publish:
+    post:
+      summary: Publish a storefront
+      responses:
+        "200":
+          description: Published
+
+  /storefront/product:
+    post:
+      summary: Add a product
+      responses:
+        "201":
+          description: Added
+
+  /storefront/{slug}/products:
+    get:
+      summary: List products for a storefront
+      parameters:
+        - in: path
+        name: slug
+        required: true
+        schema: { type: string }
+      responses:
+        "200":
+          description: Products returned
+
+  /qr/build:
+    post:
+      summary: Build a signed QR payload for checkout
+      responses:
+        "200":
+          description: Payload returned
+
+  /payment/intent:
+    post:
+      summary: Validate a TGD payment intent
+      responses:
+        "200":
+          description: Accepted
+
+  /heatmap:
+    post:
+      summary: Generate a foot traffic heatmap
+      responses:
+        "200":
+          description: Heatmap returned
+
+  /inventory/forecast:
+    post:
+      summary: Forecast demand and reorder decision
+      responses:
+        "200":
+          description: Forecast returned
+
+  /geo/offers:
+    post:
+      summary: Match geo-fenced offers for a customer
+      responses:
+        "200":
+          description: Offers returned
+
+  /settlement/net:
+    post:
+      summary: Net a batch of cross-border payments
+      responses:
+        "200":
+          description: Netted result
+
+  /settlement/fx-compare:
+    post:
+      summary: Compare legacy FX fees against TechGeo settlement
+      responses:
+        "200":
+          description: Comparison returned

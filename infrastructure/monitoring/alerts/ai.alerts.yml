@@ -1,0 +1,19 @@
+groups:
+  - name: techgeo.ai
+    interval: 30s
+    rules:
+      - alert: AiSpaceUnreachable
+        expr: probe_success{target=~"hf-.*"} == 0
+        for: 5m
+        labels:
+          severity: high
+        annotations:
+          summary: Hugging Face Space unreachable
+
+      - alert: AiRestrictionRateSpike
+        expr: rate(ai_restriction_scheduled_total[10m]) > 5
+        for: 10m
+        labels:
+          severity: medium
+        annotations:
+          summary: Rule violations spiking

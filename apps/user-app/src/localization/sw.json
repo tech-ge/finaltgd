@@ -1,0 +1,32 @@
+{
+  "app": {
+    "name": "TechGeo"
+  },
+  "wallet": {
+    "balance": "Salio",
+    "deposit": "Weka",
+    "send": "Tuma",
+    "history": "Historia"
+  },
+  "map": {
+    "origin": "Kutoka",
+    "destination": "Kwenda",
+    "eta": "Muda",
+    "distance": "Umbali"
+  },
+  "health": {
+    "wellness": "Afya",
+    "steps": "Hatua",
+    "sleep": "Usingizi"
+  },
+  "assistant": {
+    "title": "Msaidizi",
+    "voice": "Sauti",
+    "emergency": "Dharura"
+  },
+  "common": {
+    "cancel": "Ghairi",
+    "confirm": "Thibitisha",
+    "loading": "Inapakia"
+  }
+}

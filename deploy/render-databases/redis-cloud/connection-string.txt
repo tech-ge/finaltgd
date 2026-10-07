@@ -1,0 +1,6 @@
+# Template only. Do not commit credentials.
+#
+# Ledger instance: rediss://default:PASSWORD@ENDPOINT:6379
+# Cache instance:  rediss://default:PASSWORD@ENDPOINT:6379
+#
+# Set the values in the host's environment settings.

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: techgeo-admin
+  namespace: techgeo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: techgeo-admin
+  template:
+    metadata:
+      labels:
+        app: techgeo-admin
+    spec:
+      containers:
+        - name: admin
+          image: techgeo/admin:latest
+          ports:
+            - containerPort: 3008
+          envFrom:
+            - secretRef:
+                name: techgeo-admin-secrets

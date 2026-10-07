@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "TechGeo Assistant",
+    "slug": "techgeo-assistant",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "techgeo-assistant",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "app.techgeo.assistant",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "TechGeo Assistant records a short sample to enroll your voice.",
+        "NSFaceIDUsageDescription": "TechGeo Assistant uses Face ID to authorize voice vault access."
+      }
+    },
+    "android": {
+      "package": "app.techgeo.assistant",
+      "permissions": [
+        "RECORD_AUDIO",
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT",
+        "CALL_PHONE"
+      ]
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-local-authentication",
+      "expo-av"
+    ]
+  }
+}

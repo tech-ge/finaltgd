@@ -1,0 +1,48 @@
+{
+  "name": "techgeo-always-on",
+  "region": "fra",
+  "services": {
+    "ai-orchestrator": {
+      "dockerfile": "deploy/zeabur-services/Dockerfile.ai-orchestrator",
+      "context": ".",
+      "ports": [3001],
+      "env": {
+        "REDIS_URL": "${REDIS_URL}",
+        "POSTGRES_URL": "${POSTGRES_URL}",
+        "MONGO_URL": "${MONGO_URL}",
+        "HF_TOKEN": "${HF_TOKEN}",
+        "HF_SHADOW_STUDENT_URL": "${HF_SHADOW_STUDENT_URL}",
+        "JWT_SECRET": "${JWT_SECRET}"
+      }
+    },
+    "assistant": {
+      "dockerfile": "deploy/zeabur-services/Dockerfile.assistant",
+      "context": ".",
+      "ports": [3002],
+      "env": {
+        "REDIS_URL": "${REDIS_URL}",
+        "POSTGRES_URL": "${POSTGRES_URL}",
+        "HF_TOKEN": "${HF_TOKEN}",
+        "HF_VOICE_CLONE_URL": "${HF_VOICE_CLONE_URL}",
+        "JWT_SECRET": "${JWT_SECRET}"
+      }
+    },
+    "websocket": {
+      "dockerfile": "deploy/zeabur-services/Dockerfile.websocket",
+      "context": ".",
+      "ports": [3003],
+      "env": {
+        "REDIS_URL": "${REDIS_URL}",
+        "JWT_SECRET": "${JWT_SECRET}"
+      }
+    }
+  },
+  "addons": {
+    "redis": {
+      "plan": "starter",
+      "maxmemory": "256mb",
+      "persistence": "rdb",
+      "eviction": "allkeys-lru"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "projects": {
+    "business-portal": { "rootDirectory": "apps/business-portal" },
+    "admin-console": { "rootDirectory": "apps/admin-console" },
+    "laptop-mirror": { "rootDirectory": "apps/laptop-mirror" }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "title": "TechGeo Attendance",
+  "uid": "techgeo-attendance",
+  "schemaVersion": 39,
+  "panels": [
+    {
+      "title": "Check-ins",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "rate(attendance_checkins_total[1m])", "legendFormat": "checkins/s" }
+      ]
+    },
+    {
+      "title": "Failed IP",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        { "expr": "rate(attendance_failed_ip_total[1m])", "legendFormat": "failed/s" }
+      ]
+    }
+  ]
+}

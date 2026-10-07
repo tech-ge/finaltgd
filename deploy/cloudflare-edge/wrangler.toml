@@ -1,0 +1,17 @@
+name = "techgeo-edge"
+main = "src/index.ts"
+compatibility_date = "2026-01-01"
+
+[vars]
+API_GATEWAY_URL = ""
+
+[[kv_namespaces]]
+binding = "TECHGEO_KV"
+id = ""
+
+[[r2_buckets]]
+binding = "TECHGEO_R2"
+bucket_name = ""
+
+[observability]
+enabled = true

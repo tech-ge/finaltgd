@@ -1,0 +1,126 @@
+openapi: 3.0.3
+info:
+  title: TechGeo Gateway API
+  version: 1.0.0
+  description: Edge API for all TechGeo services.
+
+servers:
+  - url: https://techgeo-gateway.onrender.com
+
+security:
+  - bearerAuth: []
+
+paths:
+  /health:
+    get:
+      summary: Liveness probe
+      security: []
+      responses:
+        "200":
+          description: Service is healthy
+
+  /version:
+    get:
+      summary: Version metadata
+      security: []
+      responses:
+        "200":
+          description: Version info
+
+  /v1/auth/login:
+    post:
+      summary: Exchange credentials for a session token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [accountId, role, hardware, osVersion, installId, screenClass]
+              properties:
+                accountId: { type: integer }
+                role: { type: string, enum: [CEO, ADMIN, SUPERVISOR, WORKER, BUSINESS, USER] }
+                orgId: { type: integer }
+                hardware: { type: string }
+                osVersion: { type: string }
+                installId: { type: string }
+                screenClass: { type: string }
+      responses:
+        "200":
+          description: Session issued
+
+  /v1/wallet/deposit:
+    post:
+      summary: Mint TGD from a fiat deposit
+      responses:
+        "201":
+          description: Deposit recorded
+
+  /v1/wallet/send:
+    post:
+      summary: Transfer TGD to another account
+      responses:
+        "200":
+          description: Transfer recorded
+
+  /v1/wallet/escrow:
+    post:
+      summary: Lock funds in escrow
+      responses:
+        "201":
+          description: Escrow created
+
+  /v1/maps/route:
+    post:
+      summary: Compute a two-point route
+      responses:
+        "200":
+          description: Route options returned
+
+  /v1/attendance/checkin:
+    post:
+      summary: Register presence with dual-layer verification
+      responses:
+        "201":
+          description: Attendance recorded
+
+  /v1/ai/invoke:
+    post:
+      summary: Invoke the AI orchestrator
+      responses:
+        "200":
+          description: Result returned
+
+  /v1/assistant/synthesize:
+    post:
+      summary: Synthesize speech with the enrolled voice
+      responses:
+        "200":
+          description: Synthesis complete
+
+  /v1/business/storefront:
+    post:
+      summary: Create a storefront for a business
+      responses:
+        "201":
+          description: Storefront created
+
+  /v1/admin/live/{orgId}:
+    get:
+      summary: Read the live presence snapshot for an organization
+      parameters:
+        - in: path
+        name: orgId
+        required: true
+        schema: { type: integer }
+      responses:
+        "200":
+          description: Snapshot returned
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

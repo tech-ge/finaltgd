@@ -1,0 +1,58 @@
+openapi: 3.0.3
+info:
+  title: TechGeo Maps Service API
+  version: 1.0.0
+  description: Two-point routing, traffic ingestion, weather, geofencing.
+
+servers:
+  - url: https://techgeo-maps.onrender.com
+
+paths:
+  /health:
+    get:
+      summary: Liveness probe
+      responses:
+        "200":
+          description: OK
+
+  /route:
+    post:
+      summary: Compute routes between two points
+      responses:
+        "200":
+          description: Routes returned
+
+  /traffic/aggregate:
+    post:
+      summary: Aggregate crowd speed samples into congestion reports
+      responses:
+        "200":
+          description: Segments and congestion reports
+
+  /traffic/stops:
+    post:
+      summary: Summarize traffic light stop durations
+      responses:
+        "200":
+          description: Intersection stats
+
+  /weather/impact:
+    post:
+      summary: Read weather impact for a coordinate
+      responses:
+        "200":
+          description: Impact returned
+
+  /geofence/check:
+    post:
+      summary: Check whether a point is inside a zone
+      responses:
+        "200":
+          description: Inside flag returned
+
+  /geofence/watch:
+    post:
+      summary: Emit fence entry and exit events
+      responses:
+        "200":
+          description: Events returned

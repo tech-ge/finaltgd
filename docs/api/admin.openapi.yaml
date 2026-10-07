@@ -1,0 +1,91 @@
+openapi: 3.0.3
+info:
+  title: TechGeo Admin Service API
+  version: 1.0.0
+  description: RBAC hierarchy, live monitor, fraud detection, gold logs.
+
+servers:
+  - url: https://techgeo-admin.onrender.com
+
+paths:
+  /health:
+    get:
+      summary: Liveness probe
+      responses:
+        "200":
+          description: OK
+
+  /hierarchy/admin:
+    post:
+      summary: CEO creates an Admin
+      responses:
+        "201":
+          description: Created
+
+  /hierarchy/supervisor:
+    post:
+      summary: Admin or CEO creates a Supervisor
+      responses:
+        "201":
+          description: Created
+
+  /hierarchy/worker:
+    post:
+      summary: Supervisor or higher creates a Worker
+      responses:
+        "201":
+          description: Created
+
+  /hierarchy/worker/deactivate:
+    post:
+      summary: Deactivate a Worker
+      responses:
+        "200":
+          description: Deactivated
+
+  /live/{orgId}:
+    get:
+      summary: Read the live snapshot for an organization
+      parameters:
+        - in: path
+        name: orgId
+        required: true
+        schema: { type: integer }
+      responses:
+        "200":
+          description: Snapshot returned
+
+  /live/handshake:
+    post:
+      summary: Evaluate the IP and GPS handshake for a worker
+      responses:
+        "200":
+          description: Handshake result
+
+  /fraud/alert:
+    post:
+      summary: Dispatch a fraud alert
+      responses:
+        "202":
+          description: Dispatched
+
+  /fraud/mock-gps:
+    post:
+      summary: Detect mock GPS patterns in a sample window
+      responses:
+        "200":
+          description: Verdict
+
+  /fraud/ip-mismatch:
+    post:
+      summary: Detect IP mismatches for a set of observations
+      responses:
+        "200":
+          description: Verdicts
+
+  /gold-logs/export:
+    post:
+      summary: Extract high-quality gold logs for training
+      responses:
+        "200":
+          description: Exported
