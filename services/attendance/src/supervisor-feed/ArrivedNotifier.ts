@@ -13,7 +13,6 @@ export class ArrivedNotifier {
 
   async publish(event: ArrivedEvent): Promise<void> {
     const channel = `attendance.event.${event.orgId}`;
-    const payload = JSON.stringify(event);
-    await this.cacheRedis.publish(channel, payload);
+    await this.cacheRedis.publish(channel, JSON.stringify(event));
   }
 }

@@ -16,8 +16,8 @@ export class LiveMapFeed {
     const { rows } = await this.pool.query<{
       employee_id: number;
       full_name: string;
-      verified_latitude: string;
-      verified_longitude: string;
+      verified_latitude: string | null;
+      verified_longitude: string | null;
       verification_status: string;
       clock_in_time: Date;
     }>(

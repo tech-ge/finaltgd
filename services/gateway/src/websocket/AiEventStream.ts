@@ -4,13 +4,13 @@ export interface AiEvent {
   accountId: number;
   intent: string;
   outcome: string;
-  at: Date;
+  at: string;
 }
 
 export class AiEventStream {
   constructor(private readonly pubsub: RedisPubSub) {}
 
   async emit(event: AiEvent): Promise<void> {
-    await this.pubsub.publish(`ai.event.${event.accountId}`, JSON.stringify(event));
+    await this.pubsub.publish(`ai.event.${event.accountId}`, event);
   }
 }

@@ -19,4 +19,12 @@ export class EmergencyContacts {
   list(accountId: number): EmergencyContact[] {
     return [...(this.byAccount.get(accountId) ?? [])];
   }
+
+  remove(accountId: number, phone: string): void {
+    const list = this.byAccount.get(accountId) ?? [];
+    this.byAccount.set(
+      accountId,
+      list.filter((c) => c.phone !== phone),
+    );
+  }
 }

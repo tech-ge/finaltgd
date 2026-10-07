@@ -29,4 +29,8 @@ export class ConsentTracker {
       recordedAt: new Date(),
     });
   }
+
+  listFor(accountId: number): ConsentRecord[] {
+    return Array.from(this.records.values()).filter((r) => r.accountId === accountId);
+  }
 }

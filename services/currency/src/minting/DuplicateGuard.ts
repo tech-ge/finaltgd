@@ -10,4 +10,12 @@ export class DuplicateGuard {
     );
     return rows.length > 0;
   }
+
+  async existsByIdempotencyKey(key: string): Promise<boolean> {
+    const { rows } = await this.pool.query<{ transfer_id: number }>(
+      'SELECT transfer_id FROM ledger_transfers WHERE idempotency_key = $1 LIMIT 1',
+      [key],
+    );
+    return rows.length > 0;
+  }
 }

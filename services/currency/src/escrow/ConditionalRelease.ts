@@ -1,22 +1,30 @@
+import type { Decimal } from 'decimal.js';
+
 export interface ReleaseConditions {
   withinRadius: boolean;
   biometricOk: boolean;
   notExpired: boolean;
+  amount: Decimal;
+}
+
+export interface ReleaseVerdict {
+  release: boolean;
+  reason: string;
+}
+
+export function evaluate(conditions: ReleaseConditions): ReleaseVerdict {
+  if (!conditions.notExpired) {
+    return { release: false, reason: 'escrow_expired' };
+  }
+  if (!conditions.biometricOk) {
+    return { release: false, reason: 'biometric_required' };
+  }
+  if (!conditions.withinRadius) {
+    return { release: false, reason: 'release_outside_radius' };
+  }
+  return { release: true, reason: 'conditions_satisfied' };
 }
 
 export function canRelease(conditions: ReleaseConditions): boolean {
-  return conditions.withinRadius && conditions.biometricOk && conditions.notExpired;
-}
-
-export function reasonForRefusal(conditions: ReleaseConditions): string | null {
-  if (!conditions.withinRadius) {
-    return 'release_outside_radius';
-  }
-  if (!conditions.biometricOk) {
-    return 'biometric_required';
-  }
-  if (!conditions.notExpired) {
-    return 'escrow_expired';
-  }
-  return null;
+  return evaluate(conditions).release;
 }

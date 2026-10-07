@@ -11,6 +11,9 @@ export class AnnouncementBroadcaster {
   constructor(private readonly cacheRedis: Redis) {}
 
   async broadcast(announcement: Announcement): Promise<void> {
+    if (announcement.message.trim().length === 0) {
+      throw new Error('empty_announcement');
+    }
     const channel = `family.circle.${announcement.circleId}`;
     await this.cacheRedis.publish(channel, JSON.stringify(announcement));
   }

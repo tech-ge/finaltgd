@@ -12,6 +12,14 @@ export interface CreateEscrowInput {
   expiresInHours?: number;
 }
 
+export interface ReleaseEscrowInput {
+  escrowId: number;
+  releaseLat: number;
+  releaseLon: number;
+  biometricOk: boolean;
+  idempotencyKey: string;
+}
+
 export class EscrowService {
   constructor(private readonly pool: Pool) {}
 
@@ -38,13 +46,7 @@ export class EscrowService {
     return id;
   }
 
-  async release(input: {
-    escrowId: number;
-    releaseLat: number;
-    releaseLon: number;
-    biometricOk: boolean;
-    idempotencyKey: string;
-  }): Promise<number> {
+  async release(input: ReleaseEscrowInput): Promise<number> {
     const { rows } = await this.pool.query<{ fn_escrow_release: number }>(
       'SELECT fn_escrow_release($1, $2, $3, $4, $5) AS fn_escrow_release',
       [

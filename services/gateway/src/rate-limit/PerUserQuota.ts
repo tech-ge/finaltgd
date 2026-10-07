@@ -15,8 +15,12 @@ export const DEFAULT_QUOTA: QuotaConfig = {
 export class PerUserQuota {
   constructor(private readonly limiter: RedisLimiter, private readonly quota: QuotaConfig) {}
 
-  async check(accountId: number, scope: keyof QuotaConfig): Promise<{ allowed: boolean; remaining: number }> {
+  async check(
+    accountId: number,
+    scope: 'userPerMinute' | 'financialPerMinute' | 'aiPerMinute',
+  ): Promise<{ allowed: boolean; remaining: number }> {
     const max = this.quota[scope];
-    return this.limiter.check(`${scope}:${accountId}`, max, 60);
+    const decision = await this.limiter.check(`${scope}:${accountId}`, max, 60);
+    return { allowed: decision.allowed, remaining: decision.remaining };
   }
 }

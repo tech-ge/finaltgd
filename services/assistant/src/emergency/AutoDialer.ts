@@ -12,10 +12,11 @@ export interface DialPlan {
 }
 
 export class AutoDialer {
-  constructor(private readonly contacts: EmergencyContact[]) {}
+  constructor(private readonly lookup: (accountId: number) => EmergencyContact[]) {}
 
   plan(request: DialRequest): DialPlan {
-    const primary = this.contacts.filter((c) => c.priority <= 2);
+    const contacts = this.lookup(request.accountId);
+    const primary = contacts.filter((c) => c.priority <= 2);
     const shouldDial = request.trigger !== 'manual';
     return {
       contacts: primary,

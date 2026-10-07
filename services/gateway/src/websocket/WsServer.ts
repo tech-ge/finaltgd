@@ -13,11 +13,8 @@ interface Connection {
 
 export class WsServer {
   private readonly connections = new Set<Connection>();
-  private readonly pubsub: RedisPubSub;
 
-  constructor(private readonly jwt: JwtVerifier, pubsub: RedisPubSub) {
-    this.pubsub = pubsub;
-  }
+  constructor(private readonly jwt: JwtVerifier, private readonly pubsub: RedisPubSub) {}
 
   async attach(app: FastifyInstance): Promise<void> {
     app.get('/ws/stream', { websocket: true }, async (socket, request) => {
@@ -48,7 +45,9 @@ export class WsServer {
 
         for (const channel of channels) {
           await this.pubsub.subscribe(channel, (_ch, payload) => {
-            socket.send(payload);
+            if (socket.readyState === 1) {
+              socket.send(payload);
+            }
           });
         }
 
@@ -61,10 +60,13 @@ export class WsServer {
     });
   }
 
-  broadcast(channel: string, payload: string): void {
+  broadcast(channel: string, payload: unknown): void {
+    const serialized = JSON.stringify({ channel, payload });
     for (const conn of this.connections) {
       try {
-        conn.socket.send(JSON.stringify({ channel, payload }));
+        if (conn.socket.readyState === 1) {
+          conn.socket.send(serialized);
+        }
       } catch {
         this.connections.delete(conn);
       }

@@ -1,7 +1,7 @@
 import type { Pool } from 'pg';
 
-import { CorporateIpMatcher } from '../ip-verifier/CorporateIpMatcher.js';
 import { FiftyMeterGuard } from '../geofence-matcher/FiftyMeterGuard.js';
+import { CorporateIpMatcher } from '../ip-verifier/CorporateIpMatcher.js';
 import { classify, type VerificationStatus } from './DualMatchRule.js';
 import { LogWriter } from './LogWriter.js';
 

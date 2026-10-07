@@ -33,4 +33,13 @@ export async function registerAssistantRoutes(
       return reply.code(result.status).send(result.body);
     },
   );
+
+  app.post(
+    '/v1/assistant/call/log',
+    { preHandler: requireResourceAction('assistant', 'invoke') },
+    async (request, reply) => {
+      const result = await proxy.forward('assistant', '/call/log', request.body);
+      return reply.code(result.status).send(result.body);
+    },
+  );
 }

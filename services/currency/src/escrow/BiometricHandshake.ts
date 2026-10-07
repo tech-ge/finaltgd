@@ -7,6 +7,16 @@ export interface BiometricToken {
   signature: string;
 }
 
+export function computeBiometricSignature(
+  accountId: number,
+  deviceFingerprint: string,
+  issuedAt: number,
+  secret: string,
+): string {
+  const payload = `${accountId}:${deviceFingerprint}:${issuedAt}`;
+  return createHmac('sha256', secret).update(payload).digest('hex');
+}
+
 export function verifyBiometricToken(
   token: BiometricToken,
   secret: string,
@@ -16,13 +26,19 @@ export function verifyBiometricToken(
   if (now - token.issuedAt > maxAgeMs) {
     return false;
   }
+  if (token.issuedAt > now + 5_000) {
+    return false;
+  }
 
-  const payload = `${token.accountId}:${token.deviceFingerprint}:${token.issuedAt}`;
-  const expected = createHmac('sha256', secret).update(payload).digest('hex');
+  const expected = computeBiometricSignature(
+    token.accountId,
+    token.deviceFingerprint,
+    token.issuedAt,
+    secret,
+  );
 
   const a = Buffer.from(expected, 'hex');
   const b = Buffer.from(token.signature, 'hex');
-
   if (a.length !== b.length) {
     return false;
   }

@@ -1,17 +1,26 @@
 import cors from '@fastify/cors';
 import type { FastifyInstance } from 'fastify';
 
-const ALLOWED_ORIGINS = [
+const DEFAULT_ALLOWED = [
   'https://techgeo.app',
   'https://admin.techgeo.app',
   'https://business.techgeo.app',
   'https://mirror.techgeo.app',
 ];
 
-export async function registerCors(app: FastifyInstance): Promise<void> {
+export async function registerCors(
+  app: FastifyInstance,
+  extraOrigins: string[] = [],
+): Promise<void> {
+  const allowed = new Set([...DEFAULT_ALLOWED, ...extraOrigins]);
+
   await app.register(cors, {
     origin: (origin, cb) => {
-      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+      if (!origin) {
+        cb(null, true);
+        return;
+      }
+      if (allowed.has(origin)) {
         cb(null, true);
         return;
       }

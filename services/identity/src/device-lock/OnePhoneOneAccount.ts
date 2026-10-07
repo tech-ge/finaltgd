@@ -14,7 +14,9 @@ export class OnePhoneOneAccount {
       await client.query('BEGIN');
 
       const { rows: existingAccount } = await client.query<{ account_id: number }>(
-        'SELECT account_id FROM device_bindings WHERE account_id = $1 AND revoked_at IS NULL FOR UPDATE',
+        `SELECT account_id FROM device_bindings
+         WHERE account_id = $1 AND revoked_at IS NULL
+         FOR UPDATE`,
         [input.accountId],
       );
 
@@ -23,7 +25,9 @@ export class OnePhoneOneAccount {
       }
 
       const { rows: existingDevice } = await client.query<{ account_id: number }>(
-        'SELECT account_id FROM device_bindings WHERE device_fingerprint = $1 AND revoked_at IS NULL FOR UPDATE',
+        `SELECT account_id FROM device_bindings
+         WHERE device_fingerprint = $1 AND revoked_at IS NULL
+         FOR UPDATE`,
         [input.deviceFingerprint],
       );
 
@@ -53,5 +57,15 @@ export class OnePhoneOneAccount {
        WHERE account_id = $1 AND revoked_at IS NULL`,
       [accountId, reason],
     );
+  }
+
+  async isBound(accountId: number): Promise<boolean> {
+    const { rows } = await this.pool.query(
+      `SELECT 1 FROM device_bindings
+       WHERE account_id = $1 AND revoked_at IS NULL
+       LIMIT 1`,
+      [accountId],
+    );
+    return rows.length > 0;
   }
 }

@@ -16,7 +16,10 @@ export interface ProxyResult {
 }
 
 export class ProxyClient {
-  constructor(private readonly targets: ProxyTargets, private readonly timeoutMs = 15_000) {}
+  constructor(
+    private readonly targets: ProxyTargets,
+    private readonly timeoutMs = 15_000,
+  ) {}
 
   async forward(
     service: keyof ProxyTargets,
@@ -44,8 +47,8 @@ export class ProxyClient {
         signal: controller.signal,
       });
 
-      let parsed: unknown = null;
       const text = await response.text();
+      let parsed: unknown = null;
       if (text.length > 0) {
         try {
           parsed = JSON.parse(text);

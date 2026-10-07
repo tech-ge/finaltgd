@@ -28,3 +28,12 @@ export function withinRadius(
 ): boolean {
   return haversineMeters(currentLat, currentLon, targetLat, targetLon) <= radiusM;
 }
+
+export function validateCoordinates(lat: number, lon: number): void {
+  if (lat < -90 || lat > 90) {
+    throw new Error('invalid_latitude');
+  }
+  if (lon < -180 || lon > 180) {
+    throw new Error('invalid_longitude');
+  }
+}

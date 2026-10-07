@@ -39,11 +39,10 @@ function loadEnv(): Env {
 
 async function main(): Promise<void> {
   const env = loadEnv();
-
   const pool = new Pool({ connectionString: env.POSTGRES_URL, max: 20 });
   const deviceBinder = new DeviceBinder(pool, env.DEVICE_FINGERPRINT_SALT);
   const vault = new EncryptionVault(env.JWT_SECRET, env.KMS_KEY_ID);
-  const traceback = new TracebackService(pool, vault);
+  const traceback = new TracebackService(pool, vault, env.KMS_KEY_ID);
   const idVerifier = new NationalIdVerifier();
 
   const app = Fastify({ logger: { level: env.LOG_LEVEL } });
@@ -69,13 +68,13 @@ async function main(): Promise<void> {
       return reply.code(400).send({ error: 'invalid_request', issues: parsed.error.issues });
     }
     try {
-      const fingerprint = await deviceBinder.register(parsed.data.accountId, {
+      const result = await deviceBinder.register(parsed.data.accountId, {
         hardwareId: parsed.data.hardwareId,
         osVersion: parsed.data.osVersion,
         appInstallId: parsed.data.appInstallId,
         screenClass: parsed.data.screenClass,
       });
-      return reply.code(201).send({ fingerprint });
+      return reply.code(201).send(result);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'unknown_error';
       return reply.code(422).send({ error: message });

@@ -27,6 +27,9 @@ export class NationalIdVerifier {
     if (ageYears < 16) {
       return { verified: false, reason: 'under_minimum_age' };
     }
+    if (ageYears > 120) {
+      return { verified: false, reason: 'invalid_age' };
+    }
 
     if (input.fullName.trim().length < 3) {
       return { verified: false, reason: 'invalid_full_name' };

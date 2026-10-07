@@ -5,7 +5,7 @@ export interface PaymentEvent {
   status: 'pending' | 'settled' | 'failed';
   amountTgd: string;
   reference: string;
-  at: Date;
+  at: string;
 }
 
 export class PaymentStream {
@@ -16,6 +16,6 @@ export class PaymentStream {
       event.status === 'settled'
         ? `payments.settled.${event.accountId}`
         : `payments.pending.${event.accountId}`;
-    await this.pubsub.publish(channel, JSON.stringify(event));
+    await this.pubsub.publish(channel, event);
   }
 }

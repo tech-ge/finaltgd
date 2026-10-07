@@ -12,6 +12,7 @@ end
 export interface LockHandle {
   key: string;
   token: string;
+  ttlMs: number;
 }
 
 export class RedisLock {
@@ -23,7 +24,7 @@ export class RedisLock {
     if (result !== 'OK') {
       throw new Error(`lock_acquire_failed: ${key}`);
     }
-    return { key, token };
+    return { key, token, ttlMs };
   }
 
   async release(handle: LockHandle): Promise<void> {
@@ -36,6 +37,13 @@ export class RedisLock {
       return await fn();
     } finally {
       await this.release(handle);
+    }
+  }
+
+  async extend(handle: LockHandle, ttlMs: number): Promise<void> {
+    const result = await this.redis.pexpire(handle.key, ttlMs);
+    if (result !== 1) {
+      throw new Error(`lock_extend_failed: ${handle.key}`);
     }
   }
 }

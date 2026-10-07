@@ -16,6 +16,15 @@ export async function registerBusinessRoutes(
     },
   );
 
+  app.post(
+    '/v1/business/storefront/publish',
+    { preHandler: requireResourceAction('business', 'manage') },
+    async (request, reply) => {
+      const result = await proxy.forward('business', '/storefront/publish', request.body);
+      return reply.code(result.status).send(result.body);
+    },
+  );
+
   app.get(
     '/v1/business/storefront/:slug/products',
     { preHandler: requireResourceAction('business', 'read') },
@@ -45,6 +54,15 @@ export async function registerBusinessRoutes(
     { preHandler: requireResourceAction('business', 'manage') },
     async (request, reply) => {
       const result = await proxy.forward('business', '/heatmap', request.body);
+      return reply.code(result.status).send(result.body);
+    },
+  );
+
+  app.post(
+    '/v1/business/settlement/net',
+    { preHandler: requireResourceAction('business', 'manage') },
+    async (request, reply) => {
+      const result = await proxy.forward('business', '/settlement/net', request.body);
       return reply.code(result.status).send(result.body);
     },
   );

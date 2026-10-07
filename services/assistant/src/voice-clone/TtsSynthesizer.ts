@@ -11,6 +11,8 @@ export interface SynthesisResult {
   audioUrl: string;
 }
 
+const MAX_TEXT_LENGTH = 2_000;
+
 export class TtsSynthesizer {
   constructor(
     private readonly vault: VoiceVault,
@@ -20,6 +22,13 @@ export class TtsSynthesizer {
   ) {}
 
   async synthesize(input: SynthesisInput): Promise<SynthesisResult> {
+    if (input.text.length === 0) {
+      throw new Error('empty_synthesis_text');
+    }
+    if (input.text.length > MAX_TEXT_LENGTH) {
+      throw new Error('synthesis_text_too_long');
+    }
+
     const entry = await this.vault.load(input.accountId);
     if (!entry) {
       throw new Error('voice_not_enrolled');

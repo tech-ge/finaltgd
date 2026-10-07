@@ -1,10 +1,11 @@
-import type { HistoryResponder, HistoryEntry } from './HistoryResponder.js';
-import type { HumanFallback } from './HumanFallback.js';
+import type { HistoryEntry } from './HistoryResponder.js';
+import { decide as decideHistory } from './HistoryResponder.js';
 
 export interface IncomingCall {
   accountId: number;
   callerNumber: string;
   receivedAt: Date;
+  isKnown: boolean;
 }
 
 export interface HandledCall {
@@ -13,14 +14,12 @@ export interface HandledCall {
 }
 
 export class IncomingCallHandler {
-  constructor(
-    private readonly responder: typeof HistoryResponder,
-    private readonly fallback: typeof HumanFallback,
-  ) {}
-
   handle(call: IncomingCall, history: HistoryEntry[]): HandledCall {
-    const decision = this.responder.decide(history, call.callerNumber);
-    void this.fallback;
+    if (!call.isKnown) {
+      return { action: 'forward_to_user', reason: 'unknown_caller' };
+    }
+
+    const decision = decideHistory(history, call.callerNumber);
     if (!decision.canRespond) {
       return { action: 'forward_to_user', reason: decision.reason };
     }

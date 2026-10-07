@@ -1,4 +1,11 @@
-export type AgentMessageType = 'request' | 'response' | 'notification';
+export type AgentMessageType =
+  | 'request'
+  | 'response'
+  | 'notification'
+  | 'command'
+  | 'instruction'
+  | 'directive'
+  | 'order';
 
 export interface AgentMessage {
   messageId: string;
@@ -13,4 +20,13 @@ export interface AgentMessage {
 
 export function isRequest(message: AgentMessage): boolean {
   return message.type === 'request';
+}
+
+export function isForbidden(message: AgentMessage): boolean {
+  return (
+    message.type === 'command' ||
+    message.type === 'instruction' ||
+    message.type === 'directive' ||
+    message.type === 'order'
+  );
 }

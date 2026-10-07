@@ -1,7 +1,11 @@
 import type { Pool } from 'pg';
 
-import { hashFingerprint, type DeviceSignals } from './FingerprintHasher.js';
+import { hashFingerprint, type DeviceSignals, validateSignals } from './FingerprintHasher.js';
 import { OnePhoneOneAccount } from './OnePhoneOneAccount.js';
+
+export interface RegisterResult {
+  fingerprint: string;
+}
 
 export class DeviceBinder {
   private readonly binding: OnePhoneOneAccount;
@@ -10,10 +14,11 @@ export class DeviceBinder {
     this.binding = new OnePhoneOneAccount(pool);
   }
 
-  async register(accountId: number, signals: DeviceSignals): Promise<string> {
+  async register(accountId: number, signals: DeviceSignals): Promise<RegisterResult> {
+    validateSignals(signals);
     const fingerprint = hashFingerprint(signals, this.salt);
     await this.binding.bind({ accountId, deviceFingerprint: fingerprint });
-    return fingerprint;
+    return { fingerprint };
   }
 
   async revoke(accountId: number, reason: string): Promise<void> {
@@ -21,10 +26,6 @@ export class DeviceBinder {
   }
 
   async isBound(accountId: number): Promise<boolean> {
-    const { rows } = await this.pool.query(
-      'SELECT 1 FROM device_bindings WHERE account_id = $1 AND revoked_at IS NULL LIMIT 1',
-      [accountId],
-    );
-    return rows.length > 0;
+    return this.binding.isBound(accountId);
   }
 }

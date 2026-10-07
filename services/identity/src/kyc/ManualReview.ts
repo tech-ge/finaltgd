@@ -17,6 +17,9 @@ export class ManualReview {
   private readonly decisions: ReviewDecision[] = [];
 
   enqueue(task: ReviewTask): void {
+    if (this.queue.some((t) => t.accountId === task.accountId)) {
+      throw new Error('review_task_already_queued');
+    }
     this.queue.push(task);
   }
 

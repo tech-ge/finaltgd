@@ -11,6 +11,8 @@ export interface ResponseDecision {
   reason: string;
 }
 
+const MIN_CONFIDENCE = 0.6;
+
 export function decide(history: HistoryEntry[], caller: string): ResponseDecision {
   const matching = history.filter((h) => h.caller === caller);
   if (matching.length === 0) {
@@ -18,7 +20,7 @@ export function decide(history: HistoryEntry[], caller: string): ResponseDecisio
   }
 
   const confidence = Math.min(1, matching.length / 5);
-  if (confidence < 0.6) {
+  if (confidence < MIN_CONFIDENCE) {
     return { canRespond: false, confidence, reason: 'insufficient_history' };
   }
 

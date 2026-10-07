@@ -39,7 +39,6 @@ function loadEnv(): Env {
 
 async function main(): Promise<void> {
   const env = loadEnv();
-
   const pool = new Pool({ connectionString: env.POSTGRES_URL, max: 20 });
   const cacheRedis = new Redis(env.REDIS_CACHE_URL);
 
@@ -47,7 +46,7 @@ async function main(): Promise<void> {
   const feed = new LiveMapFeed(pool);
   const notifier = new ArrivedNotifier(cacheRedis);
 
-  const app = Fastify({ logger: { level: env.LOG_LEVEL } });
+  const app = Fastify({ logger: { level: env.LOG_LEVEL }, trustProxy: true });
 
   app.get('/health', async () => ({ status: 'ok' }));
   app.get('/version', async () => ({

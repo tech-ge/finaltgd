@@ -11,3 +11,7 @@ export function normalizeIp(ip: string): string {
   }
   return trimmed;
 }
+
+export function ipMatches(expected: string, observed: string): boolean {
+  return normalizeIp(expected) === normalizeIp(observed);
+}

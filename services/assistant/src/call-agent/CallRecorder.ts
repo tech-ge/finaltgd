@@ -19,4 +19,8 @@ export class CallRecorder {
   history(accountId: number): CallLogEntry[] {
     return this.log.filter((e) => e.accountId === accountId);
   }
+
+  count(): number {
+    return this.log.length;
+  }
 }

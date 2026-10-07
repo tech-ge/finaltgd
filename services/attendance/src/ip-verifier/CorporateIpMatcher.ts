@@ -1,6 +1,6 @@
 import type { Pool } from 'pg';
 
-import { normalizeIp } from './Ipv6Support.js';
+import { ipMatches } from './Ipv6Support.js';
 
 export class CorporateIpMatcher {
   constructor(private readonly pool: Pool) {}
@@ -14,6 +14,6 @@ export class CorporateIpMatcher {
     if (!row) {
       return false;
     }
-    return normalizeIp(row.office_static_ip) === normalizeIp(observedIp);
+    return ipMatches(row.office_static_ip, observedIp);
   }
 }

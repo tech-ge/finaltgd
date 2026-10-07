@@ -1,7 +1,7 @@
 import type { Pool } from 'pg';
 
 import { DisputeAccess } from './DisputeAccess.js';
-import { EncryptionVault } from './EncryptionVault.js';
+import { EncryptionVault, type EncryptedPayload } from './EncryptionVault.js';
 
 export interface RegisterIdentityInput {
   accountId: number;
@@ -10,10 +10,25 @@ export interface RegisterIdentityInput {
   kmsKeyId: string;
 }
 
+export interface ReadResult {
+  nationalId: string;
+  nationality: string;
+}
+
+const IV_BYTES = 12;
+
+function emptyIv(): Buffer {
+  return Buffer.alloc(IV_BYTES, 0);
+}
+
 export class TracebackService {
   private readonly disputes: DisputeAccess;
 
-  constructor(private readonly pool: Pool, private readonly vault: EncryptionVault) {
+  constructor(
+    private readonly pool: Pool,
+    private readonly vault: EncryptionVault,
+    private readonly defaultKeyId: string,
+  ) {
     this.disputes = new DisputeAccess(pool);
   }
 
@@ -38,7 +53,7 @@ export class TracebackService {
   async read(
     accountId: number,
     dispute: { disputeId: number; actorAccount: number },
-  ): Promise<{ nationalId: string; nationality: string }> {
+  ): Promise<ReadResult> {
     await this.disputes.logAccess(dispute.disputeId, dispute.actorAccount, accountId);
 
     const { rows } = await this.pool.query<{
@@ -57,17 +72,20 @@ export class TracebackService {
       throw new Error('identity_not_found');
     }
 
-    const nationalId = this.vault.decrypt({
+    const idPayload: EncryptedPayload = {
       ciphertext: row.national_id_cipher,
-      iv: Buffer.alloc(12, 0),
-      keyId: row.kms_key_id,
-    });
-    const nationality = this.vault.decrypt({
+      iv: emptyIv(),
+      keyId: row.kms_key_id || this.defaultKeyId,
+    };
+    const nationalityPayload: EncryptedPayload = {
       ciphertext: row.nationality_cipher,
-      iv: Buffer.alloc(12, 0),
-      keyId: row.kms_key_id,
-    });
+      iv: emptyIv(),
+      keyId: row.kms_key_id || this.defaultKeyId,
+    };
 
-    return { nationalId, nationality };
+    return {
+      nationalId: this.vault.decrypt(idPayload),
+      nationality: this.vault.decrypt(nationalityPayload),
+    };
   }
 }

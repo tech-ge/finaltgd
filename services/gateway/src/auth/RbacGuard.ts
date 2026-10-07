@@ -1,16 +1,8 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
-import type { SessionClaims } from './JwtVerifier.js';
+import type { Role, SessionClaims } from './JwtVerifier.js';
 
-export type Role = SessionClaims['role'];
-
-export interface RoleMatrix {
-  [resource: string]: {
-    [action: string]: Role[];
-  };
-}
-
-export const MATRIX: RoleMatrix = {
+export const ROLE_MATRIX: Record<string, Record<string, Role[]>> = {
   wallet: {
     deposit: ['USER', 'BUSINESS'],
     send: ['USER', 'BUSINESS'],
@@ -40,10 +32,12 @@ export const MATRIX: RoleMatrix = {
   },
 };
 
-export function assertRole(roles: Role[], required: Role[]): void {
-  if (!required.some((r) => roles.includes(r))) {
-    throw new Error('role_not_permitted');
+export function isAllowed(role: Role, resource: string, action: string): boolean {
+  const allowed = ROLE_MATRIX[resource]?.[action];
+  if (!allowed) {
+    return false;
   }
+  return allowed.includes(role);
 }
 
 export function requireResourceAction(resource: string, action: string) {
@@ -53,12 +47,7 @@ export function requireResourceAction(resource: string, action: string) {
       await reply.code(401).send({ error: 'unauthenticated' });
       return;
     }
-    const allowed = MATRIX[resource]?.[action];
-    if (!allowed) {
-      await reply.code(403).send({ error: 'unknown_permission' });
-      return;
-    }
-    if (!allowed.includes(claims.role)) {
+    if (!isAllowed(claims.role, resource, action)) {
       await reply.code(403).send({ error: 'forbidden' });
     }
   };

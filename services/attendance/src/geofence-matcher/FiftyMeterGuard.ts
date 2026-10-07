@@ -1,6 +1,11 @@
 import type { Pool } from 'pg';
 
-import { insideRadius } from './RadiusCalculator.js';
+import { distanceFromCenter, insideRadius, validateCoordinates } from './RadiusCalculator.js';
+
+export interface GeofenceCheck {
+  inside: boolean;
+  distanceMeters: number;
+}
 
 export class FiftyMeterGuard {
   constructor(private readonly pool: Pool) {}
@@ -9,7 +14,9 @@ export class FiftyMeterGuard {
     orgId: number,
     observedLat: number,
     observedLon: number,
-  ): Promise<{ inside: boolean; distanceMeters: number }> {
+  ): Promise<GeofenceCheck> {
+    validateCoordinates(observedLat, observedLon);
+
     const { rows } = await this.pool.query<{
       office_latitude: string;
       office_longitude: string;
@@ -17,6 +24,7 @@ export class FiftyMeterGuard {
       'SELECT office_latitude, office_longitude FROM organizations WHERE org_id = $1',
       [orgId],
     );
+
     const row = rows[0];
     if (!row) {
       return { inside: false, distanceMeters: Number.POSITIVE_INFINITY };
@@ -25,22 +33,17 @@ export class FiftyMeterGuard {
     const centerLat = Number.parseFloat(row.office_latitude);
     const centerLon = Number.parseFloat(row.office_longitude);
 
-    const inside = insideRadius({
+    const input = {
       centerLat,
       centerLon,
       pointLat: observedLat,
       pointLon: observedLon,
       allowedRadiusM: 50,
-    });
+    };
 
-    const distance = (await import('./RadiusCalculator.js')).distanceFromCenter({
-      centerLat,
-      centerLon,
-      pointLat: observedLat,
-      pointLon: observedLon,
-      allowedRadiusM: 50,
-    });
-
-    return { inside, distanceMeters: Math.round(distance) };
+    return {
+      inside: insideRadius(input),
+      distanceMeters: Math.round(distanceFromCenter(input)),
+    };
   }
 }

@@ -17,3 +17,13 @@ export function safeAdd(a: Decimal, b: Decimal): Decimal {
 export function safeSub(a: Decimal, b: Decimal): Decimal {
   return a.minus(b);
 }
+
+export function isPositive(value: Decimal): boolean {
+  return value.gt(0);
+}
+
+export function assertNonZero(value: Decimal, name: string): void {
+  if (value.equals(0)) {
+    throw new Error(`${name}_must_be_nonzero`);
+  }
+}

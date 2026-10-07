@@ -20,4 +20,9 @@ export async function registerMapsRoutes(
     const result = await proxy.forward('maps', '/weather/impact', request.body);
     return reply.code(result.status).send(result.body);
   });
+
+  app.post('/v1/maps/geofence/check', async (request, reply) => {
+    const result = await proxy.forward('maps', '/geofence/check', request.body);
+    return reply.code(result.status).send(result.body);
+  });
 }

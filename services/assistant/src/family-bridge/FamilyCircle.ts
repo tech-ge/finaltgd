@@ -10,6 +10,9 @@ export class FamilyCircle {
   constructor(private readonly pool: Pool) {}
 
   async create(ownerAccount: number, name: string): Promise<number> {
+    if (name.trim().length === 0) {
+      throw new Error('circle_name_required');
+    }
     const { rows } = await this.pool.query<{ circle_id: number }>(
       `INSERT INTO family_circles (owner_account, circle_name)
        VALUES ($1, $2)
@@ -23,7 +26,11 @@ export class FamilyCircle {
     return id;
   }
 
-  async addMember(circleId: number, accountId: number, role: FamilyMember['role']): Promise<void> {
+  async addMember(
+    circleId: number,
+    accountId: number,
+    role: FamilyMember['role'],
+  ): Promise<void> {
     await this.pool.query(
       `INSERT INTO family_members (circle_id, account_id, role)
        VALUES ($1, $2, $3)

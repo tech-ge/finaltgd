@@ -1,45 +1,51 @@
 import type { Pool } from 'pg';
 
+import { evaluate } from './ConditionalRelease.js';
 import { EscrowService } from './EscrowService.js';
-import { canRelease, reasonForRefusal, type ReleaseConditions } from './ConditionalRelease.js';
 import { withinRadius } from './GpsVerifier.js';
+
+export interface SmartContractInput {
+  escrowId: number;
+  currentLat: number;
+  currentLon: number;
+  targetLat: number;
+  targetLon: number;
+  radiusM: number;
+  biometricOk: boolean;
+  notExpired: boolean;
+  idempotencyKey: string;
+}
+
+export interface SmartContractResult {
+  released: boolean;
+  reason: string;
+}
 
 export class SmartContract {
   private readonly escrow: EscrowService;
 
-  constructor(private readonly pool: Pool) {
+  constructor(pool: Pool) {
     this.escrow = new EscrowService(pool);
   }
 
-  async create(input: Parameters<EscrowService['create']>[0]): Promise<number> {
-    return this.escrow.create(input);
-  }
+  async tryRelease(input: SmartContractInput): Promise<SmartContractResult> {
+    const inside = withinRadius(
+      input.currentLat,
+      input.currentLon,
+      input.targetLat,
+      input.targetLon,
+      input.radiusM,
+    );
 
-  async tryRelease(input: {
-    escrowId: number;
-    currentLat: number;
-    currentLon: number;
-    targetLat: number;
-    targetLon: number;
-    radiusM: number;
-    biometricOk: boolean;
-    notExpired: boolean;
-    idempotencyKey: string;
-  }): Promise<{ released: boolean; reason?: string }> {
-    const conditions: ReleaseConditions = {
-      withinRadius: withinRadius(
-        input.currentLat,
-        input.currentLon,
-        input.targetLat,
-        input.targetLon,
-        input.radiusM,
-      ),
+    const verdict = evaluate({
+      withinRadius: inside,
       biometricOk: input.biometricOk,
       notExpired: input.notExpired,
-    };
+      amount: undefined as never,
+    });
 
-    if (!canRelease(conditions)) {
-      return { released: false, reason: reasonForRefusal(conditions) ?? 'unknown' };
+    if (!verdict.release) {
+      return { released: false, reason: verdict.reason };
     }
 
     await this.escrow.release({
@@ -50,6 +56,6 @@ export class SmartContract {
       idempotencyKey: input.idempotencyKey,
     });
 
-    return { released: true };
+    return { released: true, reason: verdict.reason };
   }
 }

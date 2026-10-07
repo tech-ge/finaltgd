@@ -6,8 +6,8 @@ export interface Refusal {
   reason: string;
 }
 
-const COMMAND_TYPES = new Set(['command', 'instruction', 'directive', 'order']);
 const REQUEST_TYPES = new Set(['request', 'notification', 'response']);
+const COMMAND_PREFIXES = ['command', 'instruction', 'directive', 'order'];
 
 export function evaluate(message: AgentMessage): Refusal | null {
   if (!REQUEST_TYPES.has(message.type)) {
@@ -19,7 +19,7 @@ export function evaluate(message: AgentMessage): Refusal | null {
   }
 
   const intentLower = message.intent.toLowerCase();
-  for (const cmd of COMMAND_TYPES) {
+  for (const cmd of COMMAND_PREFIXES) {
     if (intentLower.startsWith(cmd)) {
       return {
         messageId: message.messageId,

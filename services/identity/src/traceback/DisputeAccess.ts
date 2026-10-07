@@ -1,7 +1,6 @@
 import type { Pool } from 'pg';
 
 export interface DisputeRecord {
-  disputeId: number;
   actorAccount: number;
   approverAccount: number;
   targetAccount: number;
@@ -11,9 +10,12 @@ export interface DisputeRecord {
 export class DisputeAccess {
   constructor(private readonly pool: Pool) {}
 
-  async open(input: Omit<DisputeRecord, 'disputeId'>): Promise<number> {
+  async open(input: DisputeRecord): Promise<number> {
     if (input.actorAccount === input.approverAccount) {
       throw new Error('two_person_rule_violated');
+    }
+    if (input.reason.trim().length < 10) {
+      throw new Error('dispute_reason_too_short');
     }
 
     const { rows } = await this.pool.query<{ log_id: number }>(
@@ -43,11 +45,7 @@ export class DisputeAccess {
       `INSERT INTO audit_logs
          (actor_account, action, target_type, target_ref, metadata)
        VALUES ($1, 'dispute_read', 'identity', $2, $3::jsonb)`,
-      [
-        actorAccount,
-        String(targetAccount),
-        JSON.stringify({ disputeId }),
-      ],
+      [actorAccount, String(targetAccount), JSON.stringify({ disputeId })],
     );
   }
 }

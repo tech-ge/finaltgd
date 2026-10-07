@@ -34,10 +34,12 @@ export class VoiceVault {
        WHERE account_id = $1`,
       [accountId],
     );
+
     const row = rows[0];
     if (!row || !row.is_active) {
       return null;
     }
+
     return {
       accountId: row.account_id,
       fingerprintHash: row.fingerprint_cipher.toString('hex'),

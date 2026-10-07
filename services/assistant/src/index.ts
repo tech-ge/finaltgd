@@ -4,7 +4,6 @@ import { Pool } from 'pg';
 import { z } from 'zod';
 
 import { CallRecorder } from './call-agent/CallRecorder.js';
-import { handle as _unusedHandle } from './call-agent/IncomingCallHandler.js';
 import { detect as detectAccident } from './emergency/AccidentDetector.js';
 import { AutoDialer } from './emergency/AutoDialer.js';
 import { EmergencyContacts } from './emergency/EmergencyContacts.js';
@@ -17,8 +16,6 @@ import { EnrollmentService } from './voice-clone/EnrollmentService.js';
 import { HfVoiceClient } from './voice-clone/HfVoiceClient.js';
 import { TtsSynthesizer } from './voice-clone/TtsSynthesizer.js';
 import { VoiceVault } from './voice-clone/VoiceVault.js';
-
-void _unusedHandle;
 
 interface Env {
   NODE_ENV: string;
@@ -64,14 +61,12 @@ async function main(): Promise<void> {
 
   const callRecorder = new CallRecorder();
   const emergencyContacts = new EmergencyContacts();
-  const autoDialer = new AutoDialer([]);
+  const autoDialer = new AutoDialer((accountId) => emergencyContacts.list(accountId));
   const familyNotifier = new FamilyNotifier(cacheRedis);
 
   const familyCircles = new FamilyCircle(pool);
   const announcements = new AnnouncementBroadcaster(cacheRedis);
   const groupCalls = new GroupCallCoordinator();
-
-  void emergencyContacts;
 
   const app = Fastify({ logger: { level: env.LOG_LEVEL } });
 
@@ -112,7 +107,7 @@ async function main(): Promise<void> {
 
   const SynthSchema = z.object({
     accountId: z.number().int().positive(),
-    text: z.string().min(1).max(2000),
+    text: z.string().min(1).max(2_000),
   });
 
   app.post('/voice/synthesize', async (request, reply) => {
@@ -225,8 +220,13 @@ async function main(): Promise<void> {
     if (!parsed.success) {
       return reply.code(400).send({ error: 'invalid_request', issues: parsed.error.issues });
     }
-    const id = await familyCircles.create(parsed.data.ownerAccount, parsed.data.name);
-    return reply.code(201).send({ circleId: id });
+    try {
+      const id = await familyCircles.create(parsed.data.ownerAccount, parsed.data.name);
+      return reply.code(201).send({ circleId: id });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'unknown_error';
+      return reply.code(422).send({ error: message });
+    }
   });
 
   const MemberSchema = z.object({
@@ -240,7 +240,11 @@ async function main(): Promise<void> {
     if (!parsed.success) {
       return reply.code(400).send({ error: 'invalid_request', issues: parsed.error.issues });
     }
-    await familyCircles.addMember(parsed.data.circleId, parsed.data.accountId, parsed.data.role);
+    await familyCircles.addMember(
+      parsed.data.circleId,
+      parsed.data.accountId,
+      parsed.data.role,
+    );
     return reply.code(201).send({ added: true });
   });
 
@@ -265,13 +269,18 @@ async function main(): Promise<void> {
     if (!parsed.success) {
       return reply.code(400).send({ error: 'invalid_request', issues: parsed.error.issues });
     }
-    await announcements.broadcast({
-      circleId: parsed.data.circleId,
-      fromAccount: parsed.data.fromAccount,
-      message: parsed.data.message,
-      at: new Date(),
-    });
-    return reply.code(202).send({ broadcast: true });
+    try {
+      await announcements.broadcast({
+        circleId: parsed.data.circleId,
+        fromAccount: parsed.data.fromAccount,
+        message: parsed.data.message,
+        at: new Date(),
+      });
+      return reply.code(202).send({ broadcast: true });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'unknown_error';
+      return reply.code(422).send({ error: message });
+    }
   });
 
   const GroupCallSchema = z.object({

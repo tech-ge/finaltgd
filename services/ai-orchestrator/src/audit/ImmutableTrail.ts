@@ -34,14 +34,14 @@ export class ImmutableTrail {
       if (!entry) {
         return false;
       }
-      const expectedPrevHash = prev ? prev.payloadHash : 'genesis';
-      if (entry.previousHash !== expectedPrevHash) {
+      const expectedPrev = prev ? prev.payloadHash : 'genesis';
+      if (entry.previousHash !== expectedPrev) {
         return false;
       }
-      const expectedPayloadHash = createHash('sha256')
+      const expectedHash = createHash('sha256')
         .update(JSON.stringify(entry.payload))
         .digest('hex');
-      if (entry.payloadHash !== expectedPayloadHash) {
+      if (entry.payloadHash !== expectedHash) {
         return false;
       }
     }
@@ -50,5 +50,9 @@ export class ImmutableTrail {
 
   entries_(): TrailEntry[] {
     return [...this.entries];
+  }
+
+  length(): number {
+    return this.entries.length;
   }
 }

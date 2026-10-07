@@ -19,13 +19,7 @@ export class LogWriter {
          (employee_id, verified_ip, verified_latitude, verified_longitude, verification_status)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING log_id`,
-      [
-        input.employeeId,
-        input.verifiedIp,
-        input.lat,
-        input.lon,
-        input.status,
-      ],
+      [input.employeeId, input.verifiedIp, input.lat, input.lon, input.status],
     );
     const id = rows[0]?.log_id;
     if (id === undefined) {

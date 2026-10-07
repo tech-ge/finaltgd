@@ -26,7 +26,7 @@ export class HfVoiceClient {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: input.token ? `Bearer ${input.token}` : '',
+          ...(input.token ? { Authorization: `Bearer ${input.token}` } : {}),
         },
         body: JSON.stringify(input.body),
         signal: controller.signal,

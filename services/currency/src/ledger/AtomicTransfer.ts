@@ -2,8 +2,10 @@ import { Decimal } from 'decimal.js';
 import type { Pool } from 'pg';
 import type { Redis } from 'ioredis';
 
-import { RedisLock } from './RedisLock.js';
+import { LedgerError, LEDGER_ERRORS } from '@techgeo/common';
+
 import { assertOperationAllowed } from './policy.js';
+import { RedisLock } from './RedisLock.js';
 
 export interface TransferInput {
   operation: string;
@@ -32,10 +34,16 @@ export class AtomicTransfer {
     assertOperationAllowed(input.operation);
 
     if (input.amount.lte(0)) {
-      throw new Error('amount_must_be_positive');
+      throw new LedgerError(
+        LEDGER_ERRORS.AMOUNT_MUST_BE_POSITIVE,
+        'Amount must be positive',
+      );
     }
     if (input.fromAccount === input.toAccount) {
-      throw new Error('from_and_to_must_differ');
+      throw new LedgerError(
+        LEDGER_ERRORS.FROM_TO_MUST_DIFFER,
+        'From and to accounts must differ',
+      );
     }
 
     const lockKey = `lock:transfer:${input.idempotencyKey}`;
@@ -62,7 +70,10 @@ export class AtomicTransfer {
 
         const transferId = rows[0]?.fn_atomic_transfer;
         if (transferId === undefined) {
-          throw new Error('transfer_returned_no_id');
+          throw new LedgerError(
+            'transfer_returned_no_id',
+            'Atomic transfer returned no identifier',
+          );
         }
 
         return {

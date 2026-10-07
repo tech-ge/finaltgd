@@ -4,13 +4,13 @@ export interface AttendanceEvent {
   orgId: number;
   employeeId: number;
   status: string;
-  at: Date;
+  at: string;
 }
 
 export class AttendanceStream {
   constructor(private readonly pubsub: RedisPubSub) {}
 
   async emit(event: AttendanceEvent): Promise<void> {
-    await this.pubsub.publish(`attendance.event.${event.orgId}`, JSON.stringify(event));
+    await this.pubsub.publish(`attendance.event.${event.orgId}`, event);
   }
 }

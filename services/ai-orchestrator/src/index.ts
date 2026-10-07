@@ -4,7 +4,7 @@ import { Pool } from 'pg';
 import { z } from 'zod';
 
 import { evaluate as evaluateRefusal } from './agent-to-agent/RefusalEngine.js';
-import { buildRequest, verifyEnvelope } from './agent-to-agent/RequestProtocol.js';
+import { verifyEnvelope } from './agent-to-agent/RequestProtocol.js';
 import { AiActionLogger } from './audit/AiActionLogger.js';
 import { ImmutableTrail } from './audit/ImmutableTrail.js';
 import { QueryInterface } from './audit/QueryInterface.js';
@@ -136,7 +136,15 @@ async function main(): Promise<void> {
 
   const AgentMessageSchema = z.object({
     messageId: z.string().min(1),
-    type: z.enum(['request', 'response', 'notification', 'command', 'instruction', 'directive', 'order']),
+    type: z.enum([
+      'request',
+      'response',
+      'notification',
+      'command',
+      'instruction',
+      'directive',
+      'order',
+    ]),
     fromAgent: z.string().min(1),
     toAgent: z.string().min(1),
     intent: z.string().min(1),
@@ -176,7 +184,11 @@ async function main(): Promise<void> {
       timeoutMs: 15_000,
     });
 
-    trail.append({ kind: 'agent.message', from: parsed.data.fromAgent, intent: parsed.data.intent });
+    trail.append({
+      kind: 'agent.message',
+      from: parsed.data.fromAgent,
+      intent: parsed.data.intent,
+    });
 
     return reply.code(result.ok ? 200 : result.status).send(result.body);
   });
@@ -226,7 +238,11 @@ async function main(): Promise<void> {
       metadata: { model: decision.model },
     });
 
-    trail.append({ kind: 'invoke', accountId: parsed.data.accountId, intent: parsed.data.intent });
+    trail.append({
+      kind: 'invoke',
+      accountId: parsed.data.accountId,
+      intent: parsed.data.intent,
+    });
 
     return reply.code(result.ok ? 200 : result.status).send(result.body);
   });
@@ -256,7 +272,9 @@ async function main(): Promise<void> {
     });
 
     const startsAt = new Date();
-    const endsAt = new Date(startsAt.getTime() + detection.restrictionDays * 24 * 60 * 60 * 1000);
+    const endsAt = new Date(
+      startsAt.getTime() + detection.restrictionDays * 24 * 60 * 60 * 1000,
+    );
 
     const restrictionId = await restrictions.schedule({
       accountId: parsed.data.accountId,
